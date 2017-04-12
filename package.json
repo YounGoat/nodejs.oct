@@ -1,6 +1,6 @@
 {
     "name": "oct",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "a stream octopus",
     "main": "index.js",
     "scripts": {
