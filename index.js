@@ -18,6 +18,16 @@ function extend(foo, bar) {
 	return expanded;
 }
 
+function once(fn) {
+	var hasRun = false;
+	return function() {
+		if (!hasRun) {
+			hasRun = true;
+			fn.apply(null, arguments);
+		}
+	};
+}
+
 /**
  * processor = function(data, callback) {}
  * callback = function(err, data, ...) {}
@@ -28,8 +38,15 @@ function Octopus(processor, options) {
 	}
 
 	var options = extend({
-		fifo: false
+		// 是否保持流的顺序。
+		fifo: false,
+
+		// 设定并发上限，0 表示没有上限。
+		concurrent: 0
+
 	}, options);
+
+	console.log(options);
 
 	var self = this;
 	var cursor = 0;
@@ -103,6 +120,7 @@ function Octopus(processor, options) {
 			// ---------------------------
 			// 并发执行数据处理任务。
 			var onProcessed;
+			var callbackOnce = once(callback);
 
 			// 如果要求先进先出，则需要保留当前数据游标。
 			if (options.fifo) {
@@ -110,6 +128,7 @@ function Octopus(processor, options) {
 					return function(err, data /*, ... */) {
 						var args = Array.from(arguments);
 						onDone(err, args.slice(1), index);
+						callbackOnce();
 					};
 				})(cursor);
 			}
@@ -117,6 +136,7 @@ function Octopus(processor, options) {
 				onProcessed = function(err, data /*, ... */) {
 					var args = Array.from(arguments);
 					onDone(err, args.slice(1));
+					callbackOnce();
 				}
 			}
 			onProcessing++;
@@ -124,7 +144,9 @@ function Octopus(processor, options) {
 			processor(data, onProcessed);
 
 			// 清空管道以使后续数据可以进入。
-			callback();
+			if (!options.concurrent || onProcessing < options.concurrent) {
+				callbackOnce();
+			}
 		}
 	});
 

@@ -20,20 +20,17 @@ var ws = new stream.Writable({
 var myTransform = new Octopus(function(chunk, callback) {
 	// Simulate a process which takes no more than 1 second (1000 millseconds).
 	setTimeout(function() {
-		callback(null, chunk * 3);
+		callback(null, Math.pow(chunk, 2));
 	}, Math.ceil(Math.random() * 1000));
-});
+}, { concurrent: 3 });
 
 // Connect three streams with pipes.
 rs.pipe(myTransform).pipe(ws);
 
 // Push data into the first stream.
 console.time('pipe');
-rs.push(1);
-rs.push(2);
-rs.push(3);
-rs.push(null);
+[0,1,2,3,4,5,6,7,8,9,null].forEach((n) => rs.push(n));
 
 ws.on('finish', function() {
 	console.timeEnd('pipe');
-})
+});

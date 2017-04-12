@@ -2,15 +2,41 @@
 
 __A wrapper of stream.Duplex in object mode to make things more flexible, or more efficient.__
 
-Package *oct* takes its name from octopus, an animal with eight feet.
+Package *oct* takes its name from octopus, an animal with eight feet. See [CHANGE LOG](./CHANGELOG.md) for notable changes.
+
+##	API
 
 ```javascript
 var myStream = new Octopus(function(obj, callback) {
 	// The objects piped in from upstreams will be received and processed immediately.
+}, {
+	// Option "concurrent" indicate how many objects may be processed parallelly.
+	// 0 by default means no limits.
+	concurrent: 6
 });
 ```
 
 __ATTENTION: Only object mode is supported, so, the parameter "encoding" is useless and SHOULD NOT appear.__
+
+###	new Octopus(processor [, options] )
+
+To create a duplex stream.
+
+*	__processor__ function  
+	With exactly 2 parameters ``obj`` and ``callback``.
+
+*	__options__ object / OPTIONAL  
+	Contains options for the stream.
+
+*	__options.concurrent__  number / DEFAULT 0  
+	Indicate how many objects may be processed parallelly. 0 by default means no limits.
+
+*	__options.fifo__ boolean / DEFAULT false  
+	Whether to keep in order when objects piped out.
+
+###	new Octopus.Queue(processor [, options])
+
+Same to ``new Octopus(processor, options)`` while ``options.fifo`` is forcely set true.
 
 ##	A Simple Example
 
@@ -37,7 +63,7 @@ var ws = new stream.Writable({
 var myTransform = new Octopus(function(chunk, callback) {
 	// Simulate an asynchronous process which takes no more than 1 second (1000 millseconds).
 	setTimeout(function() {
-		callback(null, chunk * 3);
+		callback(null, Math.pow(chunk, 2));
 	}, Math.ceil(Math.random() * 1000));
 });
 
@@ -46,10 +72,7 @@ rs.pipe(myTransform).pipe(ws);
 
 // Push data into the first stream.
 console.time('pipe');
-rs.push(1);
-rs.push(2);
-rs.push(3);
-rs.push(null);
+[0,1,2,3,4,5,6,7,8,9,null].forEach((n) => rs.push(n));
 
 // Print the total time consumed in millseconds.
 ws.on('finish', function() {
@@ -68,14 +91,14 @@ Sometimes, the downstream wants chunks pushed in the order that they are piped o
 var myTransform = new Octopus.Queue(function(chunk, callback) {
 	// Simulate an asynchronous process which takes no more than 1 second (1000 millseconds).
 	setTimeout(function() {
-		callback(null, chunk * 3);
+		callback(null, Math.pow(chunk, 2));
 	}, Math.ceil(Math.random() * 1000));
 });
 
 // ...
 ```
 
-You will always get 3, 6, 9 in the same order. As a cost, it may take more time to print the first number. However, the total time will still no more than about 1000 millseconds.
+You will always get 0, 1, 4, 9, ... in the same order. As a cost, it may take more time to print the first number. However, the total time will still no more than about 1000 millseconds.
 
 ##	Why *oct* ?
 
