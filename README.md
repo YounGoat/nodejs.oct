@@ -4,6 +4,8 @@ __A wrapper of stream.Duplex in object mode to make things more flexible, or mor
 
 Package *oct* takes its name from octopus, an animal with eight feet. See [CHANGE LOG](./CHANGELOG.md) for notable changes.
 
+[![NPM](https://nodei.co/npm/oct.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/oct)
+
 ##	API
 
 ```javascript
