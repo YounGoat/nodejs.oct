@@ -18,10 +18,13 @@ function extend(foo, bar) {
 	return expanded;
 }
 
-function once(fn) {
+function once(fn, errmsg) {
 	var hasRun = false;
 	return function() {
-		if (!hasRun) {
+		if (hasRun) {
+			if (errmsg) throw new Error(errmsg);
+		}
+		else {
 			hasRun = true;
 			fn.apply(null, arguments);
 		}
@@ -119,7 +122,10 @@ function Octopus(processor, options) {
 		write: function(data, encoding, callback) {
 			// ---------------------------
 			// 并发执行数据处理任务。
+
+			// onProcessed() 在当前对象处理完成时触发。
 			var onProcessed;
+
 			var callbackOnce = once(callback);
 
 			// 如果要求先进先出，则需要保留当前数据游标。
@@ -141,7 +147,10 @@ function Octopus(processor, options) {
 			}
 			onProcessing++;
 			cursor++;
-			processor(data, onProcessed);
+
+			var fnNext = once(onProcessed,
+				options.ignoreDuplicateCallback ? null : 'The callback must not be invoked twice or more.');
+			processor(data, fnNext);
 
 			// 清空管道以使后续数据可以进入。
 			if (!options.concurrent || onProcessing < options.concurrent) {

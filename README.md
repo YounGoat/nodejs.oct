@@ -7,6 +7,8 @@ Package *oct* takes its name from octopus, an animal with eight feet. See [CHANG
 ##	API
 
 ```javascript
+var Octopus = require('oct');
+
 var myStream = new Octopus(function(obj, callback) {
 	// The objects piped in from upstreams will be received and processed immediately.
 }, {
@@ -34,11 +36,16 @@ To create a duplex stream.
 *	__options.fifo__ boolean / DEFAULT false  
 	Whether to keep in order when objects piped out.
 
+*	__options.ignoreDuplicateCallback__ boolean / DEFAULT false  
+	Whether to throw exception if ``callback`` is invoked on second time in body of function ``processor``.
+
 ###	new Octopus.Queue(processor [, options])
 
 Same to ``new Octopus(processor, options)`` while ``options.fifo`` is forcely set true.
 
 ##	A Simple Example
+
+Here is a simple [example](test/test.js):
 
 ```javascript
 const stream = require('stream');
