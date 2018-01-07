@@ -1,7 +1,7 @@
 {
     "name": "oct",
     "version": "0.0.4",
-    "description": "a stream octopus",
+    "description": "A wrapper of stream.Duplex in object mode to make things more flexible, or more efficient.",
     "main": "index.js",
     "scripts": {
         "test": "node test/test"
@@ -11,8 +11,9 @@
         "url": "git+https://github.com/YounGoat/nodejs.oct.git"
     },
     "keywords": [
-        "streams",
+        "stream",
         "concurrent",
+        "concurrent-stream",
         "FIFO"
     ],
     "author": "youngoat@163.com",
