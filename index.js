@@ -49,8 +49,6 @@ function Octopus(processor, options) {
 
 	}, options);
 
-	console.log(options);
-
 	var self = this;
 	var cursor = 0;
 
@@ -66,6 +64,15 @@ function Octopus(processor, options) {
 		}
 	};
 
+	var tryEndStream = function() {
+		// 如果已标记为关闭，且当前没有数据在处理中，则终止流。
+		if (closed && onProcessing == 0) {
+			self.push(null);
+			self.emit('end');
+			self.emit('close');
+		}
+	};
+
 	var onDone = function(err, coll, index) {
 		if (err) {
 			return self.emit('error', err);
@@ -73,16 +80,9 @@ function Octopus(processor, options) {
 
 		// 代表流的终止。
 		if (coll === null) {
-			// 如果当前没有数据在处理中，则直接终止流。
-			if (onProcessing == 0) {
-				self.push(null);
-			}
-
-			// 否则，将状态标记为关闭，此后不允许新的数据进入。
-			else {
-				closed = true;
-			}
-
+			// 将状态标记为关闭，此后不允许新的数据进入。
+			closed = true;
+			tryEndStream();
 			return;
 		}
 
@@ -107,9 +107,7 @@ function Octopus(processor, options) {
 			pushColl(coll);
 		}
 
-		if (closed && onProcessing == 0) {
-			self.push(null);
-		}
+		tryEndStream();
 	};
 
 	stream.Duplex.call(this, {

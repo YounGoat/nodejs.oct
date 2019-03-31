@@ -2,6 +2,10 @@
 
 Notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning 2.0.0](http://semver.org/).
 
+##	[0.1.0] - Mar 28th, 2018
+
+*	Emit "close", "end" events.
+
 ##	[0.0.4] - 2017-04
 
 ###	Fixed, Forbidden Duplicate Invoking Of ``callback()``
