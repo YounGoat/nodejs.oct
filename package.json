@@ -1,6 +1,6 @@
 {
     "name": "oct",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "A wrapper of stream.Duplex in object mode to make things more flexible, or more efficient.",
     "main": "index.js",
     "scripts": {
