@@ -11,7 +11,7 @@ var rs = new stream.Readable({
 var ws = new stream.Writable({
 	objectMode: true,
 	write: function(chunk, encoding, callback) {
-		console.log(chunk);
+		console.log('ws written:', chunk);
 		callback();
 	}
 });
@@ -28,8 +28,14 @@ var myTransform = new Octopus(function(chunk, callback) {
 	}, Math.ceil(Math.random() * 1000));
 }, { concurrent: 3, ignoreDuplicateCallback: true });
 
+// Create a duplex stream with "oct".
+var myTransform_2 = new Octopus(function(chunk, callback) {
+	console.log('myTransform_2 written:', chunk);
+	callback(new Error('something wrong!'), chunk);
+}, { ignoreError: true });
+
 // Connect three streams with pipes.
-rs.pipe(myTransform).pipe(ws);
+rs.pipe(myTransform).pipe(myTransform_2).pipe(ws);
 
 // Push data into the first stream.
 console.time('pipe');

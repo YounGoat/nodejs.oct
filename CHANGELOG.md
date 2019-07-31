@@ -2,6 +2,10 @@
 
 Notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning 2.0.0](http://semver.org/).
 
+##	[0.2.0] - Jul 31th, 2019
+
+*	`options.ignoreError` accepted and event "exception" will be emitted on error if it is set true.
+
 ##	[0.1.0] - Mar 28th, 2018
 
 *	Emit "close", "end" events.

@@ -41,6 +41,9 @@ To create a duplex stream.
 *	__options.ignoreDuplicateCallback__ boolean / DEFAULT false  
 	Whether to throw exception if ``callback`` is invoked on second time in body of function ``processor``.
 
+*	__options.ignoreError__ boolean / DEFAULT false  
+	By default, an "error" event will be emitted and the stream will be broken if __processor__ invokes ``callback(err, ...)``. However,  if this option is set `true`, an customised "exception" event will be emitted and the stream will be continued.
+
 ###	new Octopus.Queue(processor [, options])
 
 Same to ``new Octopus(processor, options)`` while ``options.fifo`` is forcely set true.

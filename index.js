@@ -45,7 +45,14 @@ function Octopus(processor, options) {
 		fifo: false,
 
 		// 设定并发上限，0 表示没有上限。
-		concurrent: 0
+		concurrent: 0,
+
+		// 是否忽略处理器中的重复回调。
+		// 默认情况下，当回调函数被重复执行时，将抛出异常。
+		ignoreDuplicateCallback: false,
+
+		// 是否忽略错误。
+		ignoreError: false,
 
 	}, options);
 
@@ -75,7 +82,13 @@ function Octopus(processor, options) {
 
 	var onDone = function(err, coll, index) {
 		if (err) {
-			return self.emit('error', err);
+			if (options.ignoreError) {
+				// 抛出名为 exception 的自定义事件，并且继续后续的处理。
+				self.emit('exception', err);
+			}
+			else {
+				return self.emit('error', err);
+			}
 		}
 
 		// 代表流的终止。
